@@ -14,7 +14,7 @@ export async function POST(request: Request) {
             );
         }
 
-        // 1. Verify reCAPTCHA Token
+        // 1. Verify reCAPTCHA Token using REST API
         const assessment = await createAssessment({
             token: token,
             recaptchaAction: "CONTACT",
@@ -58,22 +58,19 @@ export async function POST(request: Request) {
         });
 
     } catch (error: any) {
-        console.error("Contact API Detailed Error:", error);
+        console.error("Contact API Error:", error);
         
-        // Check if it's a Prisma/Database error
+        // Provide cleaner error messages to the user
+        let errorMessage = "An internal error occurred.";
         if (error.code || error.message?.includes("prisma") || error.message?.includes("database")) {
-            return NextResponse.json(
-                { success: false, message: "Database connection failed. Please try again later." },
-                { status: 500 }
-            );
+            errorMessage = "Database connection failed. Please try again later.";
         }
 
-        // Generic error
         return NextResponse.json(
             { 
                 success: false, 
-                message: error.message || "An internal error occurred.", // Return full message for debugging
-                error: error.stack // Include stack trace while we debug
+                message: errorMessage,
+                debug: process.env.NODE_ENV === "development" ? error.message : undefined
             },
             { status: 500 }
         );

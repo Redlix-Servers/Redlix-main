@@ -1,7 +1,5 @@
-import { RecaptchaEnterpriseServiceClient } from '@google-cloud/recaptcha-enterprise';
-
 /**
- * Interface for the assessment parameters
+ * Assessment parameters interface
  */
 interface AssessmentParams {
     projectID?: string;
@@ -12,7 +10,7 @@ interface AssessmentParams {
 
 /**
  * Creates an assessment to analyze the risk of a UI action using Google reCAPTCHA Enterprise.
- * This runs on the server side.
+ * Uses the REST API to avoid complex service account authentication on Vercel.
  */
 export async function createAssessment({
     projectID = "my-project-6865-1776274939117",
@@ -20,44 +18,50 @@ export async function createAssessment({
     token,
     recaptchaAction,
 }: AssessmentParams) {
-    let client: any;
-    try {
-        client = new RecaptchaEnterpriseServiceClient();
-        const projectPath = client.projectPath(projectID);
+    const apiKey = process.env.RECAPTCHA_API_KEY || "AIzaSyCw40Iu0tg0pt5dxsvdRE4btzVx7nKj8O0";
+    const url = `https://recaptchaenterprise.googleapis.com/v1/projects/${projectID}/assessments?key=${apiKey}`;
 
-        // Build the assessment request
-        const request = {
-            assessment: {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
                 event: {
                     token: token,
                     siteKey: recaptchaKey,
+                    expectedAction: recaptchaAction,
                 },
-            },
-            parent: projectPath,
-        };
+            }),
+        });
 
-        const [response] = await client.createAssessment(request);
-        
-        // ... (rest of the logic inside try)
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("reCAPTCHA API Error Response:", errorText);
+            throw new Error(`reCAPTCHA API responded with status ${response.status}`);
+        }
+
+        const data = await response.json();
+
         // Check if the token is valid
-        if (!response.tokenProperties?.valid) {
-            console.error(`reCAPTCHA Assessment failed: ${response.tokenProperties?.invalidReason}`);
+        if (!data.tokenProperties?.valid) {
+            console.error(`reCAPTCHA Assessment failed: ${data.tokenProperties?.invalidReason}`);
             return {
                 success: false,
-                reason: response.tokenProperties?.invalidReason,
+                reason: data.tokenProperties?.invalidReason,
                 score: 0
             };
         }
 
         // Check if the expected action was executed
-        if (response.tokenProperties.action === recaptchaAction) {
-            console.log(`reCAPTCHA Risk Score: ${response.riskAnalysis?.score}`);
+        if (data.tokenProperties.action === recaptchaAction) {
+            console.log(`reCAPTCHA Risk Score: ${data.riskAnalysis?.score}`);
             
-            // Return the results
             return {
                 success: true,
-                score: response.riskAnalysis?.score || 0,
-                reasons: response.riskAnalysis?.reasons || []
+                score: data.riskAnalysis?.score || 0,
+                reasons: data.riskAnalysis?.reasons || []
             };
         } else {
             console.error("reCAPTCHA Action mismatch");
@@ -68,20 +72,14 @@ export async function createAssessment({
             };
         }
     } catch (error: any) {
-        console.error("reCAPTCHA Assessment Error:", error.message || error);
+        console.error("reCAPTCHA Assessment Exception:", error.message);
         
-        // Fallback for any error during assessment (missing credentials, network issues, etc.)
+        // Fallback for network issues or configuration errors
         // This ensures the form functionality is not broken by verification failures
-        console.warn("reCAPTCHA check failed, allowing pass-through for form functionality.");
         return {
-            success: true,
+            success: true, // Allow pass-through in case of API issues
             score: 1.0, 
-            reasons: ["ASSESSMENT_ERROR_FALLBACK"]
+            reasons: ["REST_API_ERROR_FALLBACK"]
         };
-    } finally {
-        // Ensure the client is closed if it was created
-        if (client) {
-            await client.close();
-        }
     }
 }
