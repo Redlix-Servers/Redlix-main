@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAssessment } from "@/utils/recaptcha";
 import prisma from "@/lib/prisma";
+import { sendAutoReply } from "@/utils/email";
 
 export async function POST(request: Request) {
     try {
@@ -49,6 +50,12 @@ export async function POST(request: Request) {
                 preferredMode: formData.preferredMode ? String(formData.preferredMode) : null,
                 message: String(formData.message),
             },
+        });
+
+        // 3. Send Auto-reply Email
+        await sendAutoReply({
+            to: String(formData.email),
+            name: String(formData.name)
         });
 
         return NextResponse.json({
