@@ -19,7 +19,7 @@ export async function sendAutoReply({ to, name }: SendAutoReplyParams) {
         to,
         subject: "Thank you for reaching out to Redlix Studio",
         html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 0;">
                 <h2 style="color: #E61E32;">Hello ${name},</h2>
                 <p>Thank you for reaching out to <strong>Redlix Studio</strong>. We have received your inquiry and our team is currently reviewing your details.</p>
                 <p>We pride ourselves on providing high-performance IT solutions and architectural management systems, and we're excited at the possibility of working with you.</p>
