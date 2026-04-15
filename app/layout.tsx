@@ -69,7 +69,9 @@ export const metadata: Metadata = {
     images: ["https://res.cloudinary.com/dsqqrpzfl/image/upload/v1772213109/Screenshot_2026-02-27_at_22.49.23-removebg-preview_nn1jee.png"],
   },
   icons: {
-    icon: "/icon.png",
+    icon: "https://res.cloudinary.com/dsqqrpzfl/image/upload/v1776280852/R_tqdbvy.png",
+    shortcut: "https://res.cloudinary.com/dsqqrpzfl/image/upload/v1776280852/R_tqdbvy.png",
+    apple: "https://res.cloudinary.com/dsqqrpzfl/image/upload/v1776280852/R_tqdbvy.png",
   },
   robots: {
     index: true,
