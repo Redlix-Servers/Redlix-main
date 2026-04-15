@@ -72,8 +72,8 @@ export async function POST(request: Request) {
         return NextResponse.json(
             { 
                 success: false, 
-                message: "An internal error occurred.",
-                debug: process.env.NODE_ENV === "development" ? error.message : undefined
+                message: error.message || "An internal error occurred.", // Return full message for debugging
+                error: error.stack // Include stack trace while we debug
             },
             { status: 500 }
         );
