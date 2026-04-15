@@ -20,8 +20,9 @@ export async function createAssessment({
     token,
     recaptchaAction,
 }: AssessmentParams) {
+    let client: any;
     try {
-        const client = new RecaptchaEnterpriseServiceClient();
+        client = new RecaptchaEnterpriseServiceClient();
         const projectPath = client.projectPath(projectID);
 
         // Build the assessment request
@@ -82,7 +83,9 @@ export async function createAssessment({
         
         throw error;
     } finally {
-        // Ensure the client is closed if not cached
-        await client.close();
+        // Ensure the client is closed if it was created
+        if (client) {
+            await client.close();
+        }
     }
 }
