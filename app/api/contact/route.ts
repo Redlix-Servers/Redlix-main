@@ -57,10 +57,24 @@ export async function POST(request: Request) {
             data: { id: inquiry.id }
         });
 
-    } catch (error) {
-        console.error("Contact API Error:", error);
+    } catch (error: any) {
+        console.error("Contact API Detailed Error:", error);
+        
+        // Check if it's a Prisma/Database error
+        if (error.code || error.message?.includes("prisma") || error.message?.includes("database")) {
+            return NextResponse.json(
+                { success: false, message: "Database connection failed. Please try again later." },
+                { status: 500 }
+            );
+        }
+
+        // Generic error
         return NextResponse.json(
-            { success: false, message: "An internal error occurred while processing your request." },
+            { 
+                success: false, 
+                message: "An internal error occurred.",
+                debug: process.env.NODE_ENV === "development" ? error.message : undefined
+            },
             { status: 500 }
         );
     }
