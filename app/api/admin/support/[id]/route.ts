@@ -3,12 +3,13 @@ import prisma from "@/lib/prisma";
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id: idStr } = await params;
         const body = await req.json();
         const { status } = body;
-        const id = parseInt(params.id);
+        const id = parseInt(idStr);
 
         if (isNaN(id)) {
             return NextResponse.json(
