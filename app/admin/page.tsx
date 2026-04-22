@@ -15,7 +15,8 @@ import {
     Plus,
     Send,
     Loader2,
-    ExternalLink
+    ExternalLink,
+    MessageSquare
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -40,14 +41,26 @@ interface Employee {
     joinedAt: string;
 }
 
+interface SupportTicket {
+    id: number;
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+    status: string;
+    createdAt: string;
+}
+
 export default function AdminPortal() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<"inquiries" | "employees">("inquiries");
+    const [activeTab, setActiveTab] = useState<"inquiries" | "employees" | "support">("inquiries");
     const [inquiries, setInquiries] = useState<Inquiry[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [tickets, setTickets] = useState<SupportTicket[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+    const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     
     // Employee Form State
@@ -59,8 +72,10 @@ export default function AdminPortal() {
     useEffect(() => {
         if (activeTab === "inquiries") {
             fetchInquiries();
-        } else {
+        } else if (activeTab === "employees") {
             fetchEmployees();
+        } else {
+            fetchTickets();
         }
     }, [activeTab]);
 
@@ -91,6 +106,40 @@ export default function AdminPortal() {
             console.error("Failed to fetch employees:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchTickets = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/admin/support");
+            const data = await res.json();
+            if (data.success) {
+                setTickets(data.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch tickets:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUpdateTicketStatus = async (id: number, status: string) => {
+        try {
+            const res = await fetch(`/api/admin/support/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setTickets(prev => prev.map(t => t.id === id ? { ...t, status } : t));
+                if (selectedTicket?.id === id) {
+                    setSelectedTicket(prev => prev ? { ...prev, status } : null);
+                }
+            }
+        } catch (error) {
+            console.error("Failed to update status:", error);
         }
     };
 
@@ -169,6 +218,12 @@ export default function AdminPortal() {
         emp.role.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    const filteredTickets = tickets.filter(t => 
+        t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        t.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.subject.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <main className="min-h-screen bg-[#0a0a0a] text-white flex font-sans">
             {/* Simple Sidebar */}
@@ -185,6 +240,13 @@ export default function AdminPortal() {
                     >
                         <Inbox className="w-4 h-4" />
                         Inquiries
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab("support")}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'support' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                    >
+                        <MessageSquare className="w-4 h-4" />
+                        Support Tickets
                     </button>
                     <button 
                         onClick={() => setActiveTab("employees")}
@@ -211,10 +273,10 @@ export default function AdminPortal() {
                     <div className="flex justify-between items-center bg-white/[0.02] p-8 border border-white/5 shrink-0">
                         <div>
                             <h2 className="text-2xl font-bold text-white uppercase tracking-tight">
-                                {activeTab === "inquiries" ? "Inquiries" : "Employees"}
+                                {activeTab === "inquiries" ? "Inquiries" : activeTab === "support" ? "Support Tickets" : "Employees"}
                             </h2>
                             <p className="text-sm text-white/30">
-                                {activeTab === "inquiries" ? "View and respond to incoming messages" : "Manage team members and send offer letters"}
+                                {activeTab === "inquiries" ? "View and respond to incoming messages" : activeTab === "support" ? "Manage and resolve client support issues" : "Manage team members and send offer letters"}
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
@@ -307,6 +369,91 @@ export default function AdminPortal() {
                                     ) : (
                                         <div className="h-full flex items-center justify-center text-center opacity-20">
                                             <p className="text-sm uppercase tracking-widest font-medium">Select an inquiry to view details</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : activeTab === "support" ? (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+                                {/* Ticket List */}
+                                <div className="overflow-y-auto space-y-3 pr-2 scrollbar-thin">
+                                    {loading ? (
+                                        <p className="text-white/20 text-center py-10">Loading tickets...</p>
+                                    ) : filteredTickets.length > 0 ? (
+                                        filteredTickets.map((t) => (
+                                            <div 
+                                                key={t.id}
+                                                onClick={() => setSelectedTicket(t)}
+                                                className={`p-5 border transition-all cursor-pointer ${selectedTicket?.id === t.id ? 'bg-white/5 border-white/20' : 'bg-transparent border-white/5 hover:border-white/10'}`}
+                                            >
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h3 className="font-bold text-white flex items-center gap-2">
+                                                        {t.subject}
+                                                        <span className={`px-1.5 py-0.5 text-[8px] uppercase tracking-widest font-black ${t.status === 'pending' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'bg-green-500/10 text-green-500'}`}>
+                                                            {t.status}
+                                                        </span>
+                                                    </h3>
+                                                    <span className="text-[10px] text-white/20 uppercase tracking-tighter">
+                                                        {new Date(t.createdAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-1">{t.name}</p>
+                                                <p className="text-xs text-white/40 truncate">{t.message}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="py-20 text-center border border-dashed border-white/5">
+                                            <p className="text-white/20 text-sm">No support tickets found.</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Ticket Details */}
+                                <div className="bg-white/5 border border-white/5 p-8 overflow-y-auto">
+                                    {selectedTicket ? (
+                                        <div className="space-y-8 animate-in fade-in duration-300">
+                                            <div className="space-y-4 pb-6 border-b border-white/5">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-xl font-bold">{selectedTicket.subject}</h3>
+                                                    <div className="flex gap-2">
+                                                        {selectedTicket.status === 'pending' && (
+                                                            <button 
+                                                                onClick={() => handleUpdateTicketStatus(selectedTicket.id, 'resolved')}
+                                                                className="px-3 py-1 bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-widest border border-green-500/20 hover:bg-green-500 hover:text-white transition-all"
+                                                            >
+                                                                Mark Resolved
+                                                            </button>
+                                                        )}
+                                                        <button className="px-3 py-1 bg-white/5 text-white/40 text-[10px] font-bold uppercase tracking-widest border border-white/10 hover:bg-white/10 hover:text-white transition-all">
+                                                            Close Ticket
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-wrap gap-4 text-sm text-white/30 font-medium">
+                                                    <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" /> {selectedTicket.name}</span>
+                                                    <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {selectedTicket.email}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <h4 className="text-xs font-bold uppercase tracking-wider text-white/40">Query Details</h4>
+                                                <div className="bg-white/[0.02] border border-white/5 p-6">
+                                                    <p className="text-sm leading-relaxed text-white/80 whitespace-pre-wrap">
+                                                        {selectedTicket.message}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-6">
+                                                <button className="w-full flex items-center justify-center gap-2 bg-[#E61E32] text-white font-bold py-4 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                                                    <Send className="w-4 h-4" />
+                                                    Reply via Email
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="h-full flex items-center justify-center text-center opacity-20">
+                                            <p className="text-sm uppercase tracking-widest font-medium">Select a ticket to view details</p>
                                         </div>
                                     )}
                                 </div>

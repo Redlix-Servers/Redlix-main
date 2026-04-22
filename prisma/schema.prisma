@@ -45,3 +45,15 @@ model Employee {
 
   @@map("employees")
 }
+
+model SupportTicket {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+
+  @@map("support_tickets")
+}

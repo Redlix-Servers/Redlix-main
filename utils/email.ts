@@ -111,3 +111,47 @@ export async function sendOfferLetter({ to, name, role, offerLetterLink }: SendO
         return { success: false, error };
     }
 }
+
+interface SendSupportConfirmationParams {
+    to: string;
+    name: string;
+    ticketId: number;
+    subject: string;
+}
+
+export async function sendSupportConfirmation({ to, name, ticketId, subject }: SendSupportConfirmationParams) {
+    const mailOptions = {
+        from: `"Redlix Support" <${process.env.SMTP_EMAIL}>`,
+        to,
+        subject: `Support Ticket Received - #${ticketId}`,
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.5;">
+                <div style="margin-bottom: 30px;">
+                    <img src="https://res.cloudinary.com/dsqqrpzfl/image/upload/v1776288139/Screenshot_2026-04-16_at_02.51.43-removebg-preview_ytpg09.png" alt="Redlix Studio" style="height: 40px;" />
+                </div>
+                
+                <p>Hello ${name},</p>
+                
+                <p>We have received your support request regarding <strong>"${subject}"</strong>. Our team has assigned ticket ID <strong>#${ticketId}</strong> to your case.</p>
+                
+                <p>We are currently looking into your issue and will get back to you as soon as possible.</p>
+                
+                <p>If you have any more details to share, please reply to this email.</p>
+                
+                <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <p style="margin: 0; font-weight: bold;">Redlix Support Team</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">This is an automated confirmation. We will reach out to you shortly.</p>
+                </div>
+            </div>
+        `,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Support confirmation sent to ${to}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error sending support confirmation email:", error);
+        return { success: false, error };
+    }
+}
