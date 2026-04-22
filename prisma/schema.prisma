@@ -33,3 +33,15 @@ model ContactInquiry {
 
   @@map("contact_inquiries")
 }
+
+model Employee {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  role            String
+  offerLetterLink String?
+  joinedAt        DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@map("employees")
+}
