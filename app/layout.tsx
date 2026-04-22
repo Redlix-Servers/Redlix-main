@@ -24,11 +24,9 @@ export const metadata: Metadata = {
     default: "Redlix Studio | Independent Freelance Studio & IT Solutions",
     template: "%s | Redlix Studio"
   },
-  description: "Redlix Studio is a premier independent freelance studio specializing in expert IT services, architectural management systems (Atlas), and high-performance digital solutions based in Hyderabad, India.",
+  description: "Redlix Studio is a premier independent freelance studio specializing in expert IT services and high-performance digital solutions based in Hyderabad, India.",
   keywords: [
     "Redlix Studio",
-    "Atlas Systems",
-    "Architectural Management System",
     "IT Services Hyderabad",
     "Freelance Studio Hyderabad",
     "Enterprise Software Solutions",
@@ -51,7 +49,7 @@ export const metadata: Metadata = {
     url: "https://redlix.co.in",
     siteName: "Redlix Studio",
     title: "Redlix Studio | Independent Freelance Studio & IT Solutions",
-    description: "Expert IT services and architectural management systems (Atlas) engineered for high-performance enterprise growth.",
+    description: "Expert IT services and elite digital solutions engineered for high-performance enterprise growth.",
     images: [
       {
         url: "https://res.cloudinary.com/dsqqrpzfl/image/upload/v1772213109/Screenshot_2026-02-27_at_22.49.23-removebg-preview_nn1jee.png",
@@ -63,8 +61,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Redlix Studio | IT Solutions & Atlas",
-    description: "Empowering businesses with architectural management systems and elite freelance IT services.",
+    title: "Redlix Studio | IT Solutions",
+    description: "Empowering businesses with elite freelance IT services and digital solutions.",
     images: ["https://res.cloudinary.com/dsqqrpzfl/image/upload/v1772213109/Screenshot_2026-02-27_at_22.49.23-removebg-preview_nn1jee.png"],
   },
   icons: {

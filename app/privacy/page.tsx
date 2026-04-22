@@ -174,7 +174,7 @@ export default function PrivacyPolicy() {
                                         <li>Target URL(s) and detailed Change Descriptions</li>
                                         <li>Ticket submission timestamp</li>
                                     </ul>
-                                    <p>This information is securely logged into our internal dashboard (Atlas system) strictly to monitor, execute, and track service changes. A unique Ticket ID is generated for each request to enable transparent progress tracking. All ticket data is handled under strict confidentiality.</p>
+                                    <p>This information is securely logged into our internal dashboard strictly to monitor, execute, and track service changes. A unique Ticket ID is generated for each request to enable transparent progress tracking. All ticket data is handled under strict confidentiality.</p>
                                 </div>
                             </section>
 
@@ -195,7 +195,7 @@ export default function PrivacyPolicy() {
                                     8. Data Security
                                 </h2>
                                 <div className="space-y-4 text-[16px] text-[#5f6368] leading-relaxed font-light pl-6">
-                                    <p>We implement industry-standard security practices across our freelance operations and the Atlas system, including:</p>
+                                    <p>We implement industry-standard security practices across our freelance operations and our internal management systems, including:</p>
                                     <ul className="space-y-2 list-disc pl-5">
                                         <li>Secure access controls and role-based permissions</li>
                                         <li>Restricted access to client data on a need-to-know basis</li>

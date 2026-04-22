@@ -89,7 +89,7 @@ export default function TermsAndConditions() {
                                 </h2>
                                 <div className="space-y-4 text-[16px] text-[#5f6368] leading-relaxed font-light pl-6">
                                     <p>
-                                        Redlix Studio provides bespoke digital services, including but not limited to web development, UI/UX design, and architectural management via the Atlas ecosystem.
+                                        Redlix Studio provides bespoke digital services, including but not limited to web development, UI/UX design, and architectural management systems.
                                     </p>
                                     <p>
                                         The scope of each project is defined in individual service proposals or support tickets. We reserve the right to refuse service or terminate engagements that violate our professional standards or ethical guidelines.
@@ -104,7 +104,7 @@ export default function TermsAndConditions() {
                                 </h2>
                                 <div className="space-y-4 text-[16px] text-[#5f6368] leading-relaxed font-light pl-6">
                                     <p>
-                                        Upon full payment of all fees, the ownership of final custom deliverables is transferred to the client. However, Redlix Studio retains ownership of all underlying methodologies, reusable architectural patterns, and the proprietary Atlas management framework.
+                                        Upon full payment of all fees, the ownership of final custom deliverables is transferred to the client. However, Redlix Studio retains ownership of all underlying methodologies, reusable architectural patterns, and our proprietary management framework.
                                     </p>
                                     <p>
                                         Unauthorized distribution, reverse engineering, or resale of the platform's core architectural components is strictly prohibited.
@@ -137,7 +137,7 @@ export default function TermsAndConditions() {
                                         Redlix Studio and Rishi Rohan Kalapala shall not be held liable for any indirect, consequential, or punitive damages arising from the use of the platform or services.
                                     </p>
                                     <p>
-                                        While we implement rigorous security and performance standards (e.g., via the Atlas system), we do not guarantee that services will be entirely free of errors or interruptions, particularly those caused by third-party hosting, infrastructure, or API failures.
+                                        While we implement rigorous security and performance standards across our internal systems, we do not guarantee that services will be entirely free of errors or interruptions, particularly those caused by third-party hosting, infrastructure, or API failures.
                                     </p>
                                 </div>
                             </section>

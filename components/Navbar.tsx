@@ -30,10 +30,10 @@ const Navbar = () => {
                     <div className="flex items-center gap-6 md:gap-8">
                         {/* Menu Items */}
                         <div className="hidden md:flex items-center gap-6 lg:gap-8">
-                            {['Home', 'About Us', 'Atlas', 'Portfolio', 'Resources'].map((item) => (
+                            {['Home', 'About Us', 'Portfolio', 'Resources'].map((item) => (
                                 <a
                                     key={item}
-                                    href={item === "Home" ? "/" : item === "Atlas" ? "/atlas" : `/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                    href={item === "Home" ? "/" : `/${item.toLowerCase().replace(/\s+/g, '-')}`}
                                     className="text-white/90 hover:text-white font-medium text-[15px] transition-colors tracking-wide"
                                 >
                                     {item}
@@ -74,10 +74,10 @@ const Navbar = () => {
             {isOpen && (
                 <div className="md:hidden bg-[#E61E32] border-t border-[#CC192A]/30">
                     <div className="px-4 pt-2 pb-6 space-y-1">
-                        {['Home', 'About Us', 'Atlas', 'Portfolio', 'Resources'].map((item) => (
+                        {['Home', 'About Us', 'Portfolio', 'Resources'].map((item) => (
                             <a
                                 key={item}
-                                href={item === "Home" ? "/" : item === "Atlas" ? "/atlas" : `/${item.toLowerCase().replace(/\s+/g, '-')}`}
+                                href={item === "Home" ? "/" : `/${item.toLowerCase().replace(/\s+/g, '-')}`}
                                 className="block px-3 py-3 text-base font-medium text-white hover:bg-[#CC192A]/50 rounded-none"
                             >
                                 {item}

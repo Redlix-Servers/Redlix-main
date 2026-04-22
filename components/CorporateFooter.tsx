@@ -27,15 +27,6 @@ export default function CorporateFooter() {
                 {/* Main Links Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 mb-16">
 
-                    {/* Column 1: Atlas Platform */}
-                    <div className="flex flex-col gap-5">
-                        <h4 className="text-[14px] font-medium text-[#3c4043]">Atlas Platform</h4>
-                        <ul className="flex flex-col gap-4 text-[13px]">
-                            <li><a href="https://atlas.redlix.co.in/" className="hover:text-[#E61E32] transition-colors">Overview</a></li>
-                            <li><a href="https://atlas.redlix.co.in/benefits" className="hover:text-[#E61E32] transition-colors">Business Benefits</a></li>
-                            <li><a href="https://atlas.redlix.co.in/features" className="hover:text-[#E61E32] transition-colors">System Features</a></li>
-                        </ul>
-                    </div>
 
                     {/* Column 2: Our Agency */}
                     <div className="flex flex-col gap-5">

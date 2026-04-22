@@ -15,16 +15,12 @@ export default function HeroSection() {
                         <p className="text-[15px] sm:text-[17px] text-[#5f6368] leading-[1.6] mb-8 max-w-lg mx-auto lg:mx-0">
                             Redlix is a premier IT service agency dedicated to delivering innovative technology solutions for small businesses, B2B, and B2C companies.
                         </p>
-                        <div>
-                            <a
-                                href="https://atlas.redlix.co.in/"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <Link
+                                href="/about-us"
                                 className="inline-block bg-black hover:bg-gray-800 text-white font-medium text-[15px] px-8 py-3 transition-colors rounded-none"
                             >
                                 Partner with us
-                            </a>
-                        </div>
+                            </Link>
                     </div>
 
                     <div className="w-full lg:w-[55%] flex justify-center lg:justify-end">
