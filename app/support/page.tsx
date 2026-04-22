@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Send, MessageSquare, Mail, User, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
-import Navbar from "@/components/Navbar";
 import CorporateFooter from "@/components/CorporateFooter";
 
 export default function SupportPage() {
@@ -40,7 +39,6 @@ export default function SupportPage() {
 
     return (
         <div className="flex flex-col min-h-screen bg-[#0a0a0a] text-white">
-            <Navbar />
             <main className="flex-grow">
                 {/* Hero Section */}
                 <section className="relative pt-32 pb-20 overflow-hidden border-b border-white/5">
