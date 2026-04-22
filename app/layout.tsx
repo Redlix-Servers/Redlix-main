@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import SubNavbar from "@/components/SubNavbar";
 import SmoothScrolling from "@/components/SmoothScrolling";
 
 const geistSans = Geist({
@@ -117,8 +116,8 @@ export default function RootLayout({
             gtag('config', 'G-MB42FW3TGE');
           `}
         </Script>
-        <Script 
-          src="https://www.google.com/recaptcha/enterprise.js" 
+        <Script
+          src="https://www.google.com/recaptcha/enterprise.js"
           strategy="afterInteractive"
           async
           defer
