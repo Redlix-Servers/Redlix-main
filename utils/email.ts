@@ -155,3 +155,134 @@ export async function sendSupportConfirmation({ to, name, ticketId, subject }: S
         return { success: false, error };
     }
 }
+
+interface SendMeetingConfirmationParams {
+    to: string;
+    clientName: string;
+    companyName: string;
+    appName?: string;
+    phone?: string;
+    template: string;
+    meetingTime: string;
+    developerName?: string;
+    meetingLink?: string;
+}
+
+export async function sendMeetingConfirmation({ to, clientName, companyName, appName, phone, template, meetingTime, developerName, meetingLink }: SendMeetingConfirmationParams) {
+
+    const templateDetails: Record<string, string> = {
+        "Discovery Call": "This is an introductory call to discuss your project requirements, goals, and how Redlix Studio can help you achieve them.",
+        "Project Onboarding": "Welcome to Redlix! This meeting will cover the initial steps of our collaboration, project timelines, and communication channels.",
+        "Weekly Sync": "Our regular check-in to review progress, address roadblocks, and ensure the project is moving according to plan.",
+        "Final Delivery": "The concluding session to walk through the final product, handle handovers, and discuss support/maintenance.",
+        "Developer Meet": `This technical session will be led by our developer, ${developerName || "one of our lead engineers"}, to discuss technical specifications, architecture, and code-level details.`
+    };
+
+    const details = templateDetails[template] || "A meeting has been scheduled to discuss your project with Redlix Studio.";
+    const finalMeetingLink = meetingLink || "";
+
+    const mailOptions = {
+        from: `"Redlix Client Support" <${process.env.SMTP_EMAIL}>`,
+        to,
+        subject: `Meeting Scheduled: ${template} | Redlix Studio & ${companyName}`,
+        html: `
+            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 650px; margin: 0 auto; border: 1px solid #e0e0e0; background-color: #ffffff; color: #1a1a1a;">
+                <!-- Header -->
+                <div style="background-color: #ffffff; padding: 20px 40px; text-align: left; border-bottom: 1px solid #eee;">
+                    <img src="https://res.cloudinary.com/dsqqrpzfl/image/upload/v1776288139/Screenshot_2026-04-16_at_02.51.43-removebg-preview_ytpg09.png" alt="Redlix Studio" style="height: 35px;" />
+                </div>
+                
+                <div style="padding: 40px;">
+                    <h1 style="color: #0a0a0a; font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 10px 0;">
+                        Meeting Scheduled
+                    </h1>
+                    <div style="width: 40px; height: 2px; background-color: #E61E32; margin-bottom: 30px;"></div>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
+                        Hello <strong>${clientName}</strong>,
+                    </p>
+                    
+                    <p style="font-size: 15px; line-height: 1.6; color: #444; margin-bottom: 35px;">
+                        We have successfully registered your project and scheduled a <strong>${template}</strong>. Below are the complete details for your upcoming session and project record.
+                    </p>
+
+                    <!-- Client & Project Details -->
+                    <h3 style="font-size: 12px; font-weight: 700; color: #E61E32; margin-bottom: 15px;">Project information</h3>
+                    <div style="background-color: #f8f8f8; padding: 25px; margin-bottom: 30px; border: 1px solid #eee;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="padding: 8px 0; font-size: 13px; color: #888; width: 140px;">Company</td>
+                                <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: #1a1a1a;">${companyName}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-size: 13px; color: #888;">App/Website</td>
+                                <td style="padding: 8px 0; font-size: 14px; font-weight: 600; color: #1a1a1a;">${appName || "Web Project"}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-size: 13px; color: #888;">Contact</td>
+                                <td style="padding: 8px 0; font-size: 14px; color: #1a1a1a;">${clientName} (${phone || 'N/A'})</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; font-size: 13px; color: #888;">Email</td>
+                                <td style="padding: 8px 0; font-size: 14px; color: #1a1a1a;">${to}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Meeting Details -->
+                    <h3 style="font-size: 12px; font-weight: 700; color: #E61E32; margin-bottom: 15px;">Meeting schedule</h3>
+                    <div style="background-color: #0a0a0a; padding: 30px; color: #ffffff; margin-bottom: 40px;">
+                        <p style="margin: 0 0 8px 0; font-size: 12px; color: #E61E32; font-weight: 700;">Type</p>
+                        <p style="margin: 0 0 20px 0; font-size: 16px; font-weight: 600;">${template}</p>
+                        
+                        <p style="margin: 0 0 8px 0; font-size: 12px; color: #E61E32; font-weight: 700;">Date & time</p>
+                        <p style="margin: 0 0 20px 0; font-size: 16px; font-weight: 600;">${new Date(meetingTime).toLocaleString()}</p>
+                        
+                        ${developerName ? `
+                            <p style="margin: 0 0 8px 0; font-size: 12px; color: #E61E32; font-weight: 700;">Lead developer</p>
+                            <p style="margin: 0 0 20px 0; font-size: 16px; font-weight: 600;">${developerName}</p>
+                        ` : ''}
+
+                        <p style="margin: 0 0 25px 0; font-size: 14px; color: #aaa; line-height: 1.5; border-top: 1px solid #333; padding-top: 20px;">
+                            ${details}
+                        </p>
+                        
+                        ${finalMeetingLink ? `
+                            <a href="${finalMeetingLink}" style="display: inline-block; background-color: #E61E32; color: white; padding: 14px 28px; text-decoration: none; border-radius: 2px; font-weight: 700; font-size: 13px; letter-spacing: 0.05em;">
+                                Join conference room
+                            </a>
+                        ` : `
+                            <p style="font-size: 12px; color: #E61E32; font-style: italic;">The conference link will be shared shortly before the session.</p>
+                        `}
+                    </div>
+                    
+                    <p style="font-size: 13px; line-height: 1.6; color: #888; text-align: center; font-style: italic;">
+                        Please ensure you have a stable internet connection and access to a microphone for this session.
+                    </p>
+                </div>
+
+                <!-- Footer -->
+                <div style="background-color: #fafafa; padding: 40px; border-top: 1px solid #eee;">
+                    <p style="margin: 0; font-weight: 700; color: #E61E32; font-size: 11px; letter-spacing: 0.1em; margin-bottom: 8px;">Support lead</p>
+                    <p style="margin: 0; font-size: 18px; font-weight: 700; color: #0a0a0a;">Shiva Krishna Manthena</p>
+                    <p style="margin: 2px 0 25px 0; font-size: 12px; color: #666;">Redlix Studio | Support team</p>
+                    
+                    <div style="font-size: 11px; color: #999; line-height: 1.8;">
+                        <p style="margin: 0;">© 2026 Redlix Studio</p>
+                        <p style="margin: 0;">Software & IT infrastructure solutions</p>
+                        <p style="margin: 5px 0 0 0; color: #E61E32; font-weight: 600;">www.redlix.co.in</p>
+                    </div>
+                </div>
+            </div>
+        `,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Meeting confirmation sent to ${to}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error sending meeting confirmation email:", error);
+        return { success: false, error };
+    }
+}

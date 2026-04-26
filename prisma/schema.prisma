@@ -57,3 +57,20 @@ model SupportTicket {
 
   @@map("support_tickets")
 }
+
+model Client {
+  id              Int      @id @default(autoincrement())
+  companyName     String
+  appName         String?
+  clientName      String
+  email           String   @unique
+  phone           String?
+  meetingTemplate String?
+  meetingTime     DateTime?
+  developerName   String?
+  meetingLink     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("clients")
+}
