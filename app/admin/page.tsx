@@ -70,17 +70,31 @@ interface Client {
     createdAt: string;
 }
 
+interface InternSupport {
+    id: number;
+    name: string;
+    batchNumber: string;
+    college: string;
+    email: string;
+    problemPage: string;
+    description: string;
+    status: string;
+    createdAt: string;
+}
+
 export default function AdminPortal() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<"inquiries" | "employees" | "support" | "clients">("inquiries");
+    const [activeTab, setActiveTab] = useState<"overview" | "inquiries" | "employees" | "support" | "intern-support" | "clients">("overview");
     const [inquiries, setInquiries] = useState<Inquiry[]>([]);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [tickets, setTickets] = useState<SupportTicket[]>([]);
+    const [internTickets, setInternTickets] = useState<InternSupport[]>([]);
     const [clients, setClients] = useState<Client[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
     const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
     const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
+    const [selectedInternTicket, setSelectedInternTicket] = useState<InternSupport | null>(null);
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [isEditingClient, setIsEditingClient] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
@@ -107,16 +121,37 @@ export default function AdminPortal() {
     const [sendEmailStatus, setSendEmailStatus] = useState<{ id: number, status: 'idle' | 'sending' | 'success' | 'error' } | null>(null);
 
     useEffect(() => {
-        if (activeTab === "inquiries") {
+        if (activeTab === "overview") {
+            fetchAllData();
+        } else if (activeTab === "inquiries") {
             fetchInquiries();
         } else if (activeTab === "employees") {
             fetchEmployees();
         } else if (activeTab === "support") {
             fetchTickets();
+        } else if (activeTab === "intern-support") {
+            fetchInternTickets();
         } else {
             fetchClients();
         }
     }, [activeTab]);
+
+    const fetchAllData = async () => {
+        setLoading(true);
+        try {
+            await Promise.all([
+                fetchInquiries(),
+                fetchEmployees(),
+                fetchTickets(),
+                fetchInternTickets(),
+                fetchClients()
+            ]);
+        } catch (error) {
+            console.error("Failed to fetch all data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchInquiries = async () => {
         setLoading(true);
@@ -158,6 +193,21 @@ export default function AdminPortal() {
             }
         } catch (error) {
             console.error("Failed to fetch tickets:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchInternTickets = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/admin/intern-support");
+            const data = await res.json();
+            if (data.success) {
+                setInternTickets(data.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch intern tickets:", error);
         } finally {
             setLoading(false);
         }
@@ -379,11 +429,18 @@ export default function AdminPortal() {
             {/* Simple Sidebar */}
             <aside className="w-64 border-r border-white/5 bg-[#0f0f0f] flex flex-col p-6 space-y-8">
                 <div>
-                    <h1 className="text-xl font-bold text-white tracking-tight">Admin</h1>
-                    <p className="text-[10px] text-white/30 uppercase tracking-widest mt-1">Status: Online</p>
+                    <h1 className="text-lg font-semibold text-white tracking-tight">Admin</h1>
+                    <p className="text-[11px] text-white/30 mt-0.5">Status: online</p>
                 </div>
 
                 <nav className="flex-grow space-y-1">
+                    <button 
+                        onClick={() => setActiveTab("overview")}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'overview' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                    >
+                        <Globe className="w-4 h-4" />
+                        Overview
+                    </button>
                     <button 
                         onClick={() => setActiveTab("inquiries")}
                         className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'inquiries' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
@@ -393,21 +450,28 @@ export default function AdminPortal() {
                     </button>
                     <button 
                         onClick={() => setActiveTab("support")}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'support' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'support' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
                     >
                         <MessageSquare className="w-4 h-4" />
-                        Support Tickets
+                        Support tickets
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab("intern-support")}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'intern-support' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
+                    >
+                        <Users className="w-4 h-4" />
+                        Intern support
                     </button>
                     <button 
                         onClick={() => setActiveTab("employees")}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'employees' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'employees' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
                     >
                         <Users className="w-4 h-4" />
                         Employees
                     </button>
                     <button 
                         onClick={() => setActiveTab("clients")}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'clients' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'clients' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'text-white/50 hover:text-white hover:bg-white/5'}`}
                     >
                         <Briefcase className="w-4 h-4" />
                         Clients
@@ -416,7 +480,7 @@ export default function AdminPortal() {
 
                 <button 
                     onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-2.5 text-white/40 hover:text-white hover:bg-white/5 transition-colors text-sm font-medium border border-white/5"
+                    className="flex items-center gap-3 px-4 py-2.5 bg-[#E61E32] hover:bg-[#E61E32]/90 text-white transition-all text-sm font-semibold shadow-lg shadow-[#E61E32]/10"
                 >
                     <LogOut className="w-4 h-4" />
                     Logout
@@ -424,38 +488,43 @@ export default function AdminPortal() {
             </aside>
 
             {/* Main Content */}
-            <div className="flex-grow p-10 overflow-hidden">
+            <div className="flex-grow p-8 overflow-hidden">
                 <div className="max-w-6xl mx-auto space-y-8 h-full flex flex-col">
                     {/* Header */}
-                    <div className="flex justify-between items-center bg-white/[0.02] p-8 border border-white/5 shrink-0">
+                    <div className="flex justify-between items-center bg-white/[0.02] p-6 border border-white/5 shrink-0">
                         <div>
-                            <h2 className="text-2xl font-bold text-white uppercase tracking-tight">
-                                {activeTab === "inquiries" ? "Inquiries" : activeTab === "support" ? "Support Tickets" : activeTab === "employees" ? "Employees" : "Clients"}
+                            <h2 className="text-xl font-semibold text-white tracking-tight">
+                                {activeTab === "overview" ? "Dashboard overview" : 
+                                 activeTab === "inquiries" ? "Inquiry management" : 
+                                 activeTab === "employees" ? "Employee portal" : 
+                                 activeTab === "support" ? "Support system" : 
+                                 activeTab === "intern-support" ? "Intern support system" : "Client management"}
                             </h2>
-                            <p className="text-sm text-white/30">
-                                {activeTab === "inquiries" ? "View and respond to incoming messages" : 
-                                 activeTab === "support" ? "Manage and resolve client support issues" : 
-                                 activeTab === "employees" ? "Manage team members and send offer letters" :
-                                 "Register and manage clients, projects and meetings"}
+                            <p className="text-xs text-white/30 mt-0.5">
+                                {activeTab === "overview" ? "real-time system metrics and activity" : 
+                                 activeTab === "inquiries" ? "view and respond to incoming messages" : 
+                                 activeTab === "support" ? "manage and resolve technical issues" : 
+                                 activeTab === "intern-support" ? "manage intern technical and portal issues" : 
+                                 activeTab === "employees" ? "manage organization structure" : "monitor client projects and meetings"}
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
                             {activeTab === "employees" && (
                                 <button 
                                     onClick={() => setShowAddForm(!showAddForm)}
-                                    className="flex items-center gap-2 bg-[#E61E32] hover:bg-[#E61E32]/80 text-white px-4 py-2 text-sm font-bold uppercase tracking-wider transition-colors"
+                                    className="flex items-center gap-2 bg-[#E61E32] hover:bg-[#E61E32]/80 text-white px-4 py-2 text-xs font-semibold transition-colors"
                                 >
                                     <Plus className="w-4 h-4" />
-                                    Add Employee
+                                    Add employee
                                 </button>
                             )}
                             {activeTab === "clients" && (
                                 <button 
                                     onClick={() => setShowAddClientForm(!showAddClientForm)}
-                                    className="flex items-center gap-2 bg-[#E61E32] hover:bg-[#E61E32]/80 text-white px-4 py-2 text-sm font-bold uppercase tracking-wider transition-colors"
+                                    className="flex items-center gap-2 bg-[#E61E32] hover:bg-[#E61E32]/80 text-white px-4 py-2 text-xs font-semibold transition-colors"
                                 >
                                     <Plus className="w-4 h-4" />
-                                    Register Client
+                                    Register client
                                 </button>
                             )}
                             <div className="relative w-72">
@@ -471,9 +540,96 @@ export default function AdminPortal() {
                         </div>
                     </div>
 
-                    {/* Dashboard Views */}
+                    {/* Conditional Rendering of Tabs */}
                     <div className="flex-grow overflow-hidden">
-                        {activeTab === "inquiries" ? (
+                        {activeTab === "overview" && (
+                            <div className="h-full space-y-8 animate-in fade-in duration-500 overflow-y-auto pr-2">
+                                {/* Stats Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                                    <StatCard 
+                                        icon={<Inbox className="w-5 h-5" />} 
+                                        label="Total inquiries" 
+                                        value={inquiries.length} 
+                                        sublabel={`${inquiries.filter(i => !i.isRead).length} unread`}
+                                        color="text-blue-500"
+                                    />
+                                    <StatCard 
+                                        icon={<MessageSquare className="w-5 h-5" />} 
+                                        label="Support tickets" 
+                                        value={tickets.length} 
+                                        sublabel={`${tickets.filter(t => t.status === 'open').length} open`}
+                                        color="text-[#E61E32]"
+                                    />
+                                    <StatCard 
+                                        icon={<Users className="w-5 h-5" />} 
+                                        label="Intern support" 
+                                        value={internTickets.length} 
+                                        sublabel={`${internTickets.filter(t => t.status === 'pending').length} pending`}
+                                        color="text-orange-500"
+                                    />
+                                    <StatCard 
+                                        icon={<Users className="w-5 h-5" />} 
+                                        label="Active employees" 
+                                        value={employees.length} 
+                                        sublabel="Across all roles"
+                                        color="text-green-500"
+                                    />
+                                    <StatCard 
+                                        icon={<Briefcase className="w-5 h-5" />} 
+                                        label="Registered clients" 
+                                        value={clients.length} 
+                                        sublabel={`${clients.filter(c => c.meetingTime).length} scheduled`}
+                                        color="text-yellow-500"
+                                    />
+                                </div>
+
+                                {/* Main Overview Sections */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {/* Recent Activity */}
+                                    <div className="bg-white/[0.02] border border-white/5 p-6 space-y-4">
+                                        <h3 className="text-[11px] font-medium text-white/30 flex items-center gap-2">
+                                            <Clock className="w-3.5 h-3.5" />
+                                            Recent inquiries
+                                        </h3>
+                                        <div className="space-y-4">
+                                            {inquiries.slice(0, 5).map(inq => (
+                                                <div key={inq.id} className="flex justify-between items-center p-3 bg-white/5 border border-white/5">
+                                                    <div>
+                                                        <p className="text-sm font-semibold">{inq.name}</p>
+                                                        <p className="text-[10px] text-white/30">{inq.company || "Individual"}</p>
+                                                    </div>
+                                                    <span className="text-[10px] text-[#E61E32] font-medium">{new Date(inq.createdAt).toLocaleDateString()}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Upcoming Meetings */}
+                                    <div className="bg-white/[0.02] border border-white/5 p-6 space-y-4">
+                                        <h3 className="text-[11px] font-medium text-white/30 flex items-center gap-2">
+                                            <Calendar className="w-3.5 h-3.5" />
+                                            Upcoming meetings
+                                        </h3>
+                                        <div className="space-y-4">
+                                            {clients.filter(c => c.meetingTime).sort((a,b) => new Date(a.meetingTime!).getTime() - new Date(b.meetingTime!).getTime()).slice(0, 5).map(client => (
+                                                <div key={client.id} className="flex justify-between items-center p-3 bg-white/5 border border-white/5">
+                                                    <div>
+                                                        <p className="text-sm font-semibold">{client.companyName}</p>
+                                                        <p className="text-[10px] text-white/30">{client.meetingTemplate}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-[10px] text-green-500 font-medium">{new Date(client.meetingTime!).toLocaleDateString()}</p>
+                                                        <p className="text-[10px] text-white/20">{new Date(client.meetingTime!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === "inquiries" && (
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
                                 {/* Inquiry List */}
                                 <div className="overflow-y-auto space-y-3 pr-2 scrollbar-thin">
@@ -542,7 +698,9 @@ export default function AdminPortal() {
                                     )}
                                 </div>
                             </div>
-                        ) : activeTab === "support" ? (
+                        )}
+
+                        {activeTab === "support" && (
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
                                 {/* Ticket List */}
                                 <div className="overflow-y-auto space-y-3 pr-2 scrollbar-thin">
@@ -627,7 +785,97 @@ export default function AdminPortal() {
                                     )}
                                 </div>
                             </div>
-                        ) : activeTab === "employees" ? (
+                        )}
+
+                        {activeTab === "intern-support" && (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+                                {/* Intern Ticket List */}
+                                <div className="overflow-y-auto space-y-3 pr-2 scrollbar-thin">
+                                    {loading ? (
+                                        <p className="text-white/20 text-center py-10">Loading tickets...</p>
+                                    ) : internTickets.length > 0 ? (
+                                        internTickets.map((t) => (
+                                            <div 
+                                                key={t.id}
+                                                onClick={() => setSelectedInternTicket(t)}
+                                                className={`p-5 border transition-all cursor-pointer ${selectedInternTicket?.id === t.id ? 'bg-white/5 border-white/20' : 'bg-transparent border-white/5 hover:border-white/10'}`}
+                                            >
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h3 className="font-bold text-white flex items-center gap-2">
+                                                        {t.name}
+                                                        <span className={`px-1.5 py-0.5 text-[8px] uppercase tracking-widest font-black ${t.status === 'pending' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'bg-green-500/10 text-green-500'}`}>
+                                                            {t.status}
+                                                        </span>
+                                                    </h3>
+                                                    <span className="text-[10px] text-white/20 uppercase tracking-tighter">
+                                                        {new Date(t.createdAt).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-1">{t.batchNumber} | {t.college}</p>
+                                                <p className="text-xs text-white/40 truncate">{t.description}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="py-20 text-center border border-dashed border-white/5">
+                                            <p className="text-white/20 text-sm">No intern support tickets found.</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Intern Ticket Details */}
+                                <div className="bg-white/5 border border-white/5 p-8 overflow-y-auto">
+                                    {selectedInternTicket ? (
+                                        <div className="space-y-8 animate-in fade-in duration-300">
+                                            <div className="space-y-4 pb-6 border-b border-white/5">
+                                                <div className="flex items-center justify-between">
+                                                    <h3 className="text-xl font-bold">{selectedInternTicket.name}</h3>
+                                                    <span className={`px-2 py-1 text-[10px] uppercase tracking-widest font-black ${selectedInternTicket.status === 'pending' ? 'bg-[#E61E32]/10 text-[#E61E32]' : 'bg-green-500/10 text-green-500'}`}>
+                                                        {selectedInternTicket.status}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-4 text-sm text-white/30 font-medium">
+                                                    <span className="flex items-center gap-1.5 font-bold text-white/60"><Building className="w-3.5 h-3.5" /> {selectedInternTicket.college}</span>
+                                                    <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> {selectedInternTicket.email}</span>
+                                                    <span className="flex items-center gap-1.5 text-[#E61E32] font-black uppercase tracking-tighter"><Search className="w-3.5 h-3.5" /> {selectedInternTicket.batchNumber}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <div className="space-y-1">
+                                                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/20">Problem Page</h4>
+                                                    <div className="text-sm font-mono bg-white/5 p-2 rounded border border-white/5 flex items-center gap-2">
+                                                        <ExternalLink className="w-3.5 h-3.5 text-white/40" />
+                                                        {selectedInternTicket.problemPage}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="space-y-1">
+                                                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-white/20">Issue Description</h4>
+                                                    <div className="bg-white/[0.02] border border-white/5 p-6">
+                                                        <p className="text-sm leading-relaxed text-white/80 whitespace-pre-wrap">
+                                                            {selectedInternTicket.description}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-6">
+                                                <button className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-4 text-xs uppercase tracking-widest hover:bg-[#E61E32] hover:text-white transition-all">
+                                                    <Send className="w-4 h-4" />
+                                                    Contact Intern
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="h-full flex items-center justify-center text-center opacity-20">
+                                            <p className="text-sm uppercase tracking-widest font-medium">Select an intern ticket to view details</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === "employees" && (
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
                                 {/* Employee List or Add Form */}
                                 <div className="space-y-4 h-full flex flex-col overflow-hidden">
@@ -808,13 +1056,15 @@ export default function AdminPortal() {
                                     ) : (
                                         <div className="h-full flex items-center justify-center text-center opacity-20">
                                             <p className="text-sm uppercase tracking-widest font-medium text-center">
-                                                Select an employee to<br/>view details and send mail
+                                                Select an employee to<br/>view profile and history
                                             </p>
                                         </div>
                                     )}
                                 </div>
                             </div>
-                        ) : (
+                        )}
+
+                        {activeTab === "clients" && (
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
                                 {/* Client List or Add Form */}
                                 <div className="space-y-4 h-full flex flex-col overflow-hidden">
@@ -1170,9 +1420,26 @@ export default function AdminPortal() {
 function InfoBlock({ label, value }: { label: string, value?: string }) {
     if (!value) return null;
     return (
-        <div className="space-y-1">
-            <p className="text-[10px] uppercase font-bold text-white/20 tracking-widest">{label}</p>
-            <p className="text-sm text-white/80 font-medium">{value}</p>
+        <div className="space-y-0.5">
+            <p className="text-[11px] font-medium text-white/20">{label}</p>
+            <p className="text-sm text-white/80">{value}</p>
+        </div>
+    );
+}
+
+function StatCard({ icon, label, value, sublabel, color }: { icon: React.ReactNode, label: string, value: number, sublabel: string, color: string }) {
+    return (
+        <div className="bg-white/[0.02] border border-white/5 p-4 space-y-3 hover:border-white/10 transition-colors group">
+            <div className={`w-8 h-8 bg-white/5 flex items-center justify-center border border-white/10 ${color}`}>
+                <div className="w-4 h-4 flex items-center justify-center">
+                    {icon}
+                </div>
+            </div>
+            <div>
+                <p className="text-[11px] font-medium text-white/40">{label}</p>
+                <h4 className="text-xl font-semibold mt-0.5">{value}</h4>
+                <p className="text-[10px] text-white/20 mt-0.5">{sublabel}</p>
+            </div>
         </div>
     );
 }

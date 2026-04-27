@@ -74,3 +74,17 @@ model Client {
 
   @@map("clients")
 }
+
+model InternSupport {
+  id           Int      @id @default(autoincrement())
+  name         String
+  batchNumber  String
+  college      String
+  email        String
+  problemPage  String
+  description  String
+  status       String   @default("pending")
+  createdAt    DateTime @default(now())
+
+  @@map("intern_support")
+}

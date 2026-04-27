@@ -8,8 +8,9 @@ import ContactPopup from "./ContactPopup";
 export default function ConditionalNav({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isAdminPage = pathname?.startsWith("/admin");
+    const isInternSupport = pathname === "/intern-support";
 
-    if (isAdminPage) {
+    if (isAdminPage || isInternSupport) {
         return <>{children}</>;
     }
 
