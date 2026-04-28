@@ -101,7 +101,9 @@ export default function AdminPortal() {
     
     // Employee Form State
     const [showAddForm, setShowAddForm] = useState(false);
+    const [showOnboardForm, setShowOnboardForm] = useState(false);
     const [newEmployee, setNewEmployee] = useState({ name: "", email: "", role: "", offerLetterLink: "" });
+    const [newOnboardEmployee, setNewOnboardEmployee] = useState({ name: "", email: "", role: "" });
     
     // Client Form State
     const [showAddClientForm, setShowAddClientForm] = useState(false);
@@ -118,7 +120,7 @@ export default function AdminPortal() {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [sendEmailStatus, setSendEmailStatus] = useState<{ id: number, status: 'idle' | 'sending' | 'success' | 'error' } | null>(null);
+    const [sendEmailStatus, setSendEmailStatus] = useState<{ id: number, action?: string, status: 'idle' | 'sending' | 'success' | 'error' } | null>(null);
 
     useEffect(() => {
         if (activeTab === "overview") {
@@ -261,9 +263,36 @@ export default function AdminPortal() {
                 setEmployees([data.data, ...employees]);
                 setShowAddForm(false);
                 setNewEmployee({ name: "", email: "", role: "", offerLetterLink: "" });
+            } else {
+                alert(data.message || "Failed to add employee");
             }
         } catch (error) {
             console.error("Failed to add employee:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleOnboardEmployee = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const res = await fetch("/api/admin/employees", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newOnboardEmployee),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setEmployees([data.data, ...employees]);
+                setShowOnboardForm(false);
+                setNewOnboardEmployee({ name: "", email: "", role: "" });
+                sendOnboardingEmail(data.data.id);
+            } else {
+                alert(data.message || "Failed to onboard employee");
+            }
+        } catch (error) {
+            console.error("Failed to onboard employee:", error);
         } finally {
             setIsSubmitting(false);
         }
@@ -359,7 +388,7 @@ export default function AdminPortal() {
     };
 
     const sendOfferLetter = async (employeeId: number) => {
-        setSendEmailStatus({ id: employeeId, status: 'sending' });
+        setSendEmailStatus({ id: employeeId, action: 'offer', status: 'sending' });
         try {
             const res = await fetch("/api/admin/employees/send-offer", {
                 method: "POST",
@@ -368,14 +397,35 @@ export default function AdminPortal() {
             });
             const data = await res.json();
             if (data.success) {
-                setSendEmailStatus({ id: employeeId, status: 'success' });
+                setSendEmailStatus({ id: employeeId, action: 'offer', status: 'success' });
                 setTimeout(() => setSendEmailStatus(null), 3000);
             } else {
-                setSendEmailStatus({ id: employeeId, status: 'error' });
+                setSendEmailStatus({ id: employeeId, action: 'offer', status: 'error' });
             }
         } catch (error) {
             console.error("Failed to send email:", error);
-            setSendEmailStatus({ id: employeeId, status: 'error' });
+            setSendEmailStatus({ id: employeeId, action: 'offer', status: 'error' });
+        }
+    };
+
+    const sendOnboardingEmail = async (employeeId: number) => {
+        setSendEmailStatus({ id: employeeId, action: 'onboarding', status: 'sending' });
+        try {
+            const res = await fetch("/api/admin/employees/send-onboarding", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ employeeId }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setSendEmailStatus({ id: employeeId, action: 'onboarding', status: 'success' });
+                setTimeout(() => setSendEmailStatus(null), 3000);
+            } else {
+                setSendEmailStatus({ id: employeeId, action: 'onboarding', status: 'error' });
+            }
+        } catch (error) {
+            console.error("Failed to send onboarding email:", error);
+            setSendEmailStatus({ id: employeeId, action: 'onboarding', status: 'error' });
         }
     };
 
@@ -510,13 +560,22 @@ export default function AdminPortal() {
                         </div>
                         <div className="flex items-center gap-4">
                             {activeTab === "employees" && (
-                                <button 
-                                    onClick={() => setShowAddForm(!showAddForm)}
-                                    className="flex items-center gap-2 bg-[#E61E32] hover:bg-[#E61E32]/80 text-white px-4 py-2 text-xs font-semibold transition-colors"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    Add employee
-                                </button>
+                                <>
+                                    <button 
+                                        onClick={() => { setShowAddForm(!showAddForm); setShowOnboardForm(false); }}
+                                        className="flex items-center gap-2 bg-[#E61E32] hover:bg-[#E61E32]/80 text-white px-4 py-2 text-xs font-semibold transition-colors"
+                                    >
+                                        <Plus className="w-4 h-4" />
+                                        Add employee
+                                    </button>
+                                    <button 
+                                        onClick={() => { setShowOnboardForm(!showOnboardForm); setShowAddForm(false); }}
+                                        className="flex items-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white px-4 py-2 text-xs font-semibold transition-colors"
+                                    >
+                                        <Users className="w-4 h-4" />
+                                        Onboard employee
+                                    </button>
+                                </>
                             )}
                             {activeTab === "clients" && (
                                 <button 
@@ -939,6 +998,54 @@ export default function AdminPortal() {
                                                 </button>
                                             </form>
                                         </div>
+                                    ) : showOnboardForm ? (
+                                        <div className="bg-white/5 border border-white/10 p-8 animate-in slide-in-from-top-4 duration-300">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="text-lg font-bold uppercase tracking-tight">Onboard New Employee</h3>
+                                                <button onClick={() => setShowOnboardForm(false)} className="text-white/40 hover:text-white text-xs">Cancel</button>
+                                            </div>
+                                            <form onSubmit={handleOnboardEmployee} className="space-y-4">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Full Name</label>
+                                                        <input 
+                                                            required
+                                                            type="text"
+                                                            value={newOnboardEmployee.name}
+                                                            onChange={(e) => setNewOnboardEmployee({...newOnboardEmployee, name: e.target.value})}
+                                                            className="w-full bg-white/5 border border-white/10 px-4 py-2 text-sm focus:outline-none focus:border-white/30"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Email Address</label>
+                                                        <input 
+                                                            required
+                                                            type="email"
+                                                            value={newOnboardEmployee.email}
+                                                            onChange={(e) => setNewOnboardEmployee({...newOnboardEmployee, email: e.target.value})}
+                                                            className="w-full bg-white/5 border border-white/10 px-4 py-2 text-sm focus:outline-none focus:border-white/30"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Job Role</label>
+                                                    <input 
+                                                        required
+                                                        type="text"
+                                                        value={newOnboardEmployee.role}
+                                                        onChange={(e) => setNewOnboardEmployee({...newOnboardEmployee, role: e.target.value})}
+                                                        className="w-full bg-white/5 border border-white/10 px-4 py-2 text-sm focus:outline-none focus:border-white/30"
+                                                    />
+                                                </div>
+                                                <button 
+                                                    disabled={isSubmitting}
+                                                    type="submit"
+                                                    className="w-full bg-white text-black font-bold py-3 text-xs uppercase tracking-widest hover:bg-white/90 transition-colors disabled:opacity-50"
+                                                >
+                                                    {isSubmitting ? "Onboarding..." : "Onboard Employee"}
+                                                </button>
+                                            </form>
+                                        </div>
                                     ) : (
                                         <div className="overflow-y-auto space-y-3 pr-2 scrollbar-thin flex-grow">
                                             {loading ? (
@@ -967,17 +1074,36 @@ export default function AdminPortal() {
                                                                         }}
                                                                         disabled={sendEmailStatus?.id === emp.id && sendEmailStatus.status === 'sending'}
                                                                         className={`flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold uppercase tracking-tight border transition-colors ${
-                                                                            sendEmailStatus?.id === emp.id && sendEmailStatus.status === 'success' 
+                                                                            sendEmailStatus?.id === emp.id && sendEmailStatus.action === 'offer' && sendEmailStatus.status === 'success' 
                                                                             ? 'bg-green-500/10 border-green-500/50 text-green-500' 
                                                                             : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-white'
                                                                         }`}
                                                                     >
-                                                                        {sendEmailStatus?.id === emp.id && sendEmailStatus.status === 'sending' ? (
+                                                                        {sendEmailStatus?.id === emp.id && sendEmailStatus.action === 'offer' && sendEmailStatus.status === 'sending' ? (
                                                                             <Loader2 className="w-3 h-3 animate-spin" />
                                                                         ) : (
                                                                             <Send className="w-3 h-3" />
                                                                         )}
-                                                                        {sendEmailStatus?.id === emp.id && sendEmailStatus.status === 'success' ? "Sent" : "Send Mail"}
+                                                                        {sendEmailStatus?.id === emp.id && sendEmailStatus.action === 'offer' && sendEmailStatus.status === 'success' ? "Sent" : "Offer"}
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            sendOnboardingEmail(emp.id);
+                                                                        }}
+                                                                        disabled={sendEmailStatus?.id === emp.id && sendEmailStatus.status === 'sending'}
+                                                                        className={`flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold uppercase tracking-tight border transition-colors ${
+                                                                            sendEmailStatus?.id === emp.id && sendEmailStatus.action === 'onboarding' && sendEmailStatus.status === 'success' 
+                                                                            ? 'bg-green-500/10 border-green-500/50 text-green-500' 
+                                                                            : 'bg-white/5 border-white/10 hover:bg-white/10 text-white/60 hover:text-white'
+                                                                        }`}
+                                                                    >
+                                                                        {sendEmailStatus?.id === emp.id && sendEmailStatus.action === 'onboarding' && sendEmailStatus.status === 'sending' ? (
+                                                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                                                        ) : (
+                                                                            <Mail className="w-3 h-3" />
+                                                                        )}
+                                                                        {sendEmailStatus?.id === emp.id && sendEmailStatus.action === 'onboarding' && sendEmailStatus.status === 'success' ? "Sent" : "Onboard"}
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -1032,24 +1158,39 @@ export default function AdminPortal() {
                                                 </div>
                                             </div>
 
-                                            <div className="pt-6">
+                                            <div className="pt-6 space-y-3">
                                                 <button 
                                                     onClick={() => sendOfferLetter(selectedEmployee.id)}
                                                     disabled={sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.status === 'sending'}
                                                     className="w-full flex items-center justify-center gap-2 bg-white text-black font-bold py-4 text-xs uppercase tracking-widest hover:bg-[#E61E32] hover:text-white transition-all disabled:opacity-50"
                                                 >
-                                                    {sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.status === 'sending' ? (
+                                                    {sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.action === 'offer' && sendEmailStatus.status === 'sending' ? (
                                                         <Loader2 className="w-4 h-4 animate-spin" />
                                                     ) : (
                                                         <Mail className="w-4 h-4" />
                                                     )}
                                                     Send Official Offer Email
                                                 </button>
+                                                <button 
+                                                    onClick={() => sendOnboardingEmail(selectedEmployee.id)}
+                                                    disabled={sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.status === 'sending'}
+                                                    className="w-full flex items-center justify-center gap-2 bg-white/5 text-white/80 font-bold py-4 text-xs uppercase tracking-widest border border-white/10 hover:bg-white/10 hover:text-white transition-all disabled:opacity-50"
+                                                >
+                                                    {sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.action === 'onboarding' && sendEmailStatus.status === 'sending' ? (
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                    ) : (
+                                                        <Send className="w-4 h-4" />
+                                                    )}
+                                                    Send Onboarding Email
+                                                </button>
                                                 {sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.status === 'error' && (
                                                     <p className="text-[10px] text-[#E61E32] text-center mt-2 font-bold uppercase">Error sending email. Check logs.</p>
                                                 )}
-                                                {sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.status === 'success' && (
+                                                {sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.action === 'offer' && sendEmailStatus.status === 'success' && (
                                                     <p className="text-[10px] text-green-500 text-center mt-2 font-bold uppercase">Offer letter sent successfully!</p>
+                                                )}
+                                                {sendEmailStatus?.id === selectedEmployee.id && sendEmailStatus.action === 'onboarding' && sendEmailStatus.status === 'success' && (
+                                                    <p className="text-[10px] text-green-500 text-center mt-2 font-bold uppercase">Onboarding email sent successfully!</p>
                                                 )}
                                             </div>
                                         </div>

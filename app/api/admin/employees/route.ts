@@ -32,6 +32,17 @@ export async function POST(req: Request) {
             );
         }
 
+        const existingEmployee = await prisma.employee.findUnique({
+            where: { email },
+        });
+
+        if (existingEmployee) {
+            return NextResponse.json(
+                { success: false, message: "An employee with this email already exists." },
+                { status: 400 }
+            );
+        }
+
         const employee = await prisma.employee.create({
             data: {
                 name,

@@ -286,3 +286,63 @@ export async function sendMeetingConfirmation({ to, clientName, companyName, app
         return { success: false, error };
     }
 }
+
+interface SendOnboardingEmailParams {
+    to: string;
+    name: string;
+    role: string;
+}
+
+export async function sendOnboardingEmail({ to, name, role }: SendOnboardingEmailParams) {
+    const mailOptions = {
+        from: `"Redlix HR" <${process.env.SMTP_EMAIL}>`,
+        to,
+        subject: `Welcome to Redlix Studio | Onboarding Successful`,
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #eee; background-color: #ffffff; color: #333;">
+                <div style="padding: 20px; border-bottom: 1px solid #eee;">
+                    <img src="https://res.cloudinary.com/dsqqrpzfl/image/upload/v1776288139/Screenshot_2026-04-16_at_02.51.43-removebg-preview_ytpg09.png" alt="Redlix Studio" style="height: 30px;" />
+                </div>
+                
+                <div style="padding: 20px;">
+                    <h2 style="color: #111; margin-top: 0;">Welcome to the Team!</h2>
+                    
+                    <p>Hello <strong>${name}</strong>,</p>
+                    
+                    <p>You have been successfully registered in the Redlix system as a <strong>${role}</strong>. Your account is fully set up, and you will receive your project (Gig) details directly via email as they become available.</p>
+
+                    <h4 style="color: #E61E32; margin-bottom: 10px;">Gig Working Guidelines:</h4>
+                    <div style="background-color: #f9f9f9; padding: 15px; border: 1px solid #eee; margin-bottom: 20px;">
+                        <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.6;">
+                            <li><strong>Responsiveness:</strong> Acknowledge incoming Gig emails within 24 hours.</li>
+                            <li><strong>Quality Standards:</strong> Consistently adhere to Redlix quality and code guidelines.</li>
+                            <li><strong>Confidentiality:</strong> Ensure all client details and project assets remain private.</li>
+                            <li><strong>Communication:</strong> Maintain proactive communication with your project lead.</li>
+                            <li><strong>Timeliness:</strong> Deliver all assignments on or before the agreed deadline.</li>
+                        </ul>
+                    </div>
+
+                    <p>We are delighted to welcome you to the team and look forward to collaborating with you!</p>
+                </div>
+
+                <div style="background-color: #fafafa; padding: 20px; border-top: 1px solid #eee;">
+                    <p style="margin: 0; font-size: 14px;">Best regards,</p>
+                    <p style="margin: 5px 0 0 0; font-weight: bold; font-size: 14px;">Shiva Krishna Manthena</p>
+                    <p style="margin: 0; font-size: 12px; color: #666;">Support Lead | Redlix Studio</p>
+                    
+                    <p style="margin: 15px 0 0 0; font-size: 10px; color: #999;">© 2026 Redlix Studio</p>
+                </div>
+            </div>
+        `,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Onboarding email sent to ${to}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Error sending onboarding email:", error);
+        return { success: false, error };
+    }
+}
+
