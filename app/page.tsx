@@ -5,6 +5,7 @@ import ProjectsSection from "@/components/ProjectsSection";
 import BlogsSection from "@/components/BlogsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import FinalCTA from "@/components/FinalCTA";
+import FAQSection from "@/components/FAQSection";
 import CorporateFooter from "@/components/CorporateFooter";
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
         <BlogsSection />
         <TestimonialsSection />
         <FinalCTA />
+        <FAQSection />
         <CorporateFooter />
       </main>
     </div>

@@ -27,10 +27,10 @@ export default function BlogsSection() {
 
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
                     <div className="max-w-2xl">
-                        <h2 className="text-[28px] sm:text-[34px] font-normal text-[#202124] tracking-tight mb-2">
+                        <h2 className="text-[28px] sm:text-[34px] font-normal text-gray-900 tracking-tight mb-4">
                             Latest Insights
                         </h2>
-                        <p className="text-[15px] text-[#5f6368] leading-relaxed">
+                        <p className="text-[14px] text-gray-500 leading-relaxed font-normal">
                             Discover our latest thoughts on software engineering, product design, and digital strategy.
                         </p>
                     </div>
@@ -66,7 +66,7 @@ export default function BlogsSection() {
 
                             <div className="p-6 flex flex-col flex-grow">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <span className="text-[10px] font-bold bg-[#E61E32] text-white px-2 py-1 tracking-widest uppercase rounded-none">
+                                    <span className="text-[10px] font-medium bg-[#E61E32]/10 text-[#E61E32] px-2 py-0.5 tracking-wide rounded-sm">
                                         {post.tag}
                                     </span>
                                     <span className="text-[12px] font-medium text-gray-500 ml-2">
@@ -77,7 +77,7 @@ export default function BlogsSection() {
                                 <h3 className="text-[18px] font-medium text-[#202124] tracking-tight mb-2 group-hover:text-[#E61E32] transition-colors duration-300 leading-tight">
                                     {post.title}
                                 </h3>
-                                <p className="text-[14px] text-[#5f6368] leading-relaxed line-clamp-3 mt-auto">
+                                <p className="text-[13px] text-[#5f6368] leading-relaxed line-clamp-3 mt-auto font-normal">
                                     {post.description}
                                 </p>
 

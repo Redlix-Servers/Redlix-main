@@ -15,12 +15,12 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Atlas | Precision Architectural Management",
-    description: "Explore Atlas, Redlix Studio's high-performance management architecture designed for distributed development workflows, unified portal collaboration, and enterprise-grade deployment management.",
-    keywords: ["Atlas Architecture", "Project Tracking System", "Distributed Development Workflow", "Enterprise Architectural Hub"],
+    title: "Kiro | Precision Architectural Management",
+    description: "Explore Kiro, Redlix Studio's high-performance management architecture designed for distributed development workflows, unified portal collaboration, and enterprise-grade deployment management.",
+    keywords: ["Kiro Architecture", "Project Tracking System", "Distributed Development Workflow", "Enterprise Architectural Hub"],
 };
 
-export default function AtlasOverview() {
+export default function KiroOverview() {
     return (
         <div className="flex flex-col min-h-screen bg-white font-sans text-black">
             <main className="flex-grow">
@@ -31,10 +31,10 @@ export default function AtlasOverview() {
                             <div className="w-full lg:w-1/2">
                                 <span className="text-[#E61E32] font-medium text-[11px] uppercase tracking-[0.3em] mb-4 block">System Overview</span>
                                 <h1 className="text-[28px] md:text-[36px] lg:text-[42px] font-medium tracking-tight text-[#202124] leading-tight mb-6">
-                                    Atlas — Precision Architectural Management Component
+                                    Kiro — Precision Architectural Management Component
                                 </h1>
                                 <p className="text-[16px] md:text-[18px] text-[#5f6368] leading-relaxed font-light mb-8">
-                                    Atlas is a high-performance management architecture designed for distributed development workflows. It provides a unified portal for developers, clients, and administrators to facilitate collaboration, project tracking, and deployment management through a centralized architectural hub.
+                                    Kiro is a high-performance management architecture designed for distributed development workflows. It provides a unified portal for developers, clients, and administrators to facilitate collaboration, project tracking, and deployment management through a centralized architectural hub.
                                 </p>
                                 <div className="flex gap-4">
                                     <a
@@ -43,7 +43,7 @@ export default function AtlasOverview() {
                                         rel="noopener noreferrer"
                                         className="bg-[#E61E32] text-white px-8 py-3.5 text-[13px] font-medium uppercase tracking-widest hover:bg-[#CC192A] transition-colors"
                                     >
-                                        Explore Atlas
+                                        Explore Kiro
                                     </a>
                                 </div>
                             </div>
@@ -51,7 +51,7 @@ export default function AtlasOverview() {
                                 <div className="relative">
                                     <img
                                         src="https://ik.imagekit.io/dypkhqxip/Online%20world-bro.svg"
-                                        alt="Atlas Illustration"
+                                        alt="Kiro Illustration"
                                         className="w-full max-w-[500px] lg:max-w-none h-auto lg:scale-[1.35] lg:translate-x-8 relative z-10"
                                     />
                                 </div>
@@ -69,7 +69,7 @@ export default function AtlasOverview() {
                             </div>
                             <div className="w-full md:w-2/3">
                                 <p className="text-[18px] md:text-[20px] text-white leading-relaxed font-light">
-                                    Engineered for scale, Atlas optimizes the pipeline from initial project inquiry to production deployment. The system implements a minimalist design language coupled with a robust enterprise-grade security infrastructure.
+                                    Engineered for scale, Kiro optimizes the pipeline from initial project inquiry to production deployment. The system implements a minimalist design language coupled with a robust enterprise-grade security infrastructure.
                                 </p>
                             </div>
                         </div>
@@ -143,12 +143,12 @@ export default function AtlasOverview() {
                                     "Security is not a feature, but a fundamental architectural requirement for modern distributed systems."
                                 </p>
                                 <p className="text-[16px] leading-relaxed opacity-80 font-light">
-                                    Atlas implements a rigorous Role-Based Access Control (RBAC) model. Session integrity is maintained via HTTP-only, secure, same-site cookies, enforced at the Edge through Next.js middleware to ensure complete isolation between Admin, Developer, and Client segments.
+                                    Kiro implements a rigorous Role-Based Access Control (RBAC) model. Session integrity is maintained via HTTP-only, secure, same-site cookies, enforced at the Edge through Next.js middleware to ensure complete isolation between Admin, Developer, and Client segments.
                                 </p>
                                 <div className="bg-white/10 p-6 border-l-4 border-white/30">
                                     <h4 className="text-[14px] font-medium uppercase tracking-widest mb-2">Technical Note:</h4>
                                     <p className="text-[14px] opacity-70 leading-relaxed font-light">
-                                        The implementation leverage's Next.js Edge Middleware for zero-latency authorization checks. By neutralizing threats at the edge, Atlas prevents unauthorized access to the application layer, ensuring that sensitive project metadata remains encrypted and isolated within the enterprise perimeter.
+                                        The implementation leverage's Next.js Edge Middleware for zero-latency authorization checks. By neutralizing threats at the edge, Kiro prevents unauthorized access to the application layer, ensuring that sensitive project metadata remains encrypted and isolated within the enterprise perimeter.
                                     </p>
                                 </div>
                             </div>

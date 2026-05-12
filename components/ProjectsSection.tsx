@@ -6,6 +6,13 @@ import Link from "next/link";
 
 const projects = [
     {
+        title: "PisciDrop",
+        slug: "piscidrop",
+        category: "Logistics & Supply Chain",
+        image: "https://ik.imagekit.io/dypkhqxip/ab.png",
+        description: "Next-generation logistics platform optimizing end-to-end delivery ecosystems. Features real-time tracking and intelligent route synchronization.",
+    },
+    {
         title: "Dhasha Media",
         slug: "dhasha-media",
         category: "Internal Operations Engine",
@@ -107,10 +114,10 @@ export default function ProjectsSection() {
             <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-12 mb-12">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="max-w-2xl">
-                        <h2 className="text-[32px] sm:text-[40px] font-normal text-[#202124] tracking-tight mb-4">
+                        <h2 className="text-[28px] sm:text-[34px] font-normal text-gray-900 tracking-tight mb-4">
                             Featured Portfolio
                         </h2>
-                        <p className="text-[16px] text-[#5f6368] leading-relaxed">
+                        <p className="text-[14px] text-gray-500 leading-relaxed font-normal">
                             Explore some of our recent digital transformations. From robust enterprise software to elegant consumer applications, see how we deliver results.
                         </p>
                     </div>
@@ -173,13 +180,13 @@ export default function ProjectsSection() {
 
                             {/* Content */}
                             <div className="absolute inset-0 p-8 flex flex-col justify-end pointer-events-none">
-                                <span className="text-[12px] font-bold text-white/80 tracking-widest uppercase mb-2">
+                                <span className="text-[11px] font-medium text-white/80 tracking-wide mb-2">
                                     {project.category}
                                 </span>
-                                <h3 className="text-[24px] font-medium text-white tracking-tight mb-2">
+                                <h3 className="text-[20px] font-medium text-white tracking-tight mb-2">
                                     {project.title}
                                 </h3>
-                                <p className="text-[14px] text-white/70 leading-relaxed line-clamp-2 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                <p className="text-[14px] text-white/70 leading-relaxed line-clamp-2 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 font-normal">
                                     {project.description}
                                 </p>
                             </div>
